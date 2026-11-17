@@ -19,11 +19,13 @@ class UserConfig:
     config['status']="Hi There!"
 
     # LoRa configuration
-    config['lora_sp']=12            # Spreading
-    config['lora_bw']=250000        # Bandwidth
+    # Japan 920MHz band (ARIB STD-T108): 125kHz fits one 200kHz unit,
+    # 13dBm = 20mW, SF10 keeps normal messages well under the 4s TX limit.
+    config['lora_sp']=10            # Spreading
+    config['lora_bw']=125000        # Bandwidth
     config['lora_cr']=8             # Coding rate
-    config['lora_fr']=869500000     # Frequency
-    config['lora_pw']=17            # TX power (dbm, range 2-20)
+    config['lora_fr']=920800000     # Frequency
+    config['lora_pw']=13            # TX power (dbm, range 2-20)
 
    # WiFi network, in order to use the IRC interface.
     config['wifi'] = {

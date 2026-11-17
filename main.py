@@ -9,6 +9,10 @@ from freakwan import FreakWAN
 
 fw = FreakWAN()
 
+# Japanese on the OLED (Misaki 8x8 font, see jpfont.py).
+import jpfont
+jpfont.install(fw.display)
+
 # Connect to WiFi ASAP if the configuration demands so.
 wifi_network = fw.config.get('wifi_default_network')
 if wifi_network:
@@ -20,6 +24,12 @@ asyncio.create_task(fw.cron())
 asyncio.create_task(fw.send_hello_message())
 asyncio.create_task(fw.send_periodic_message())
 asyncio.create_task(fw.receive_from_serial())
+
+# Quick messages on the button (T-Beam: see quickmsg.py).
+from device_config import DeviceConfig
+if hasattr(DeviceConfig, 'button0'):
+    import quickmsg
+    quickmsg.install(fw, DeviceConfig.button0)
 if fw.config.get('irc') and fw.config['irc']['enabled']: fw.start_irc()
 if fw.config.get('telegram') and fw.config['telegram']['enabled']: fw.start_telegram()
 if fw.bleuart: fw.bleuart.set_callback(fw.ble_receive_callback)
