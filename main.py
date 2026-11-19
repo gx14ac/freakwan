@@ -11,7 +11,10 @@ fw = FreakWAN()
 
 # Japanese on the OLED (Misaki 8x8 font, see jpfont.py).
 import jpfont
-jpfont.install(fw.display)
+if jpfont.install(fw.display):
+    # FreakWAN picks the 4x6 font on 64px screens, which can't draw
+    # Japanese (shows '?'). Use the 8x8 font so Misaki glyphs are used.
+    fw.scroller.select_font("big")
 
 # Connect to WiFi ASAP if the configuration demands so.
 wifi_network = fw.config.get('wifi_default_network')

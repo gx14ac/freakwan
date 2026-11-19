@@ -65,4 +65,8 @@ class DeviceConfig:
 
     def get_battery_microvolts():
         if DeviceConfig.pmu is None: return 0
+        # PMU status 1 (0x00) bit 3: battery present. Without a battery the
+        # ADC reads noise, which FreakWAN takes for an empty battery and
+        # shuts down. Return 0 so it is treated as USB powered (100%).
+        if not DeviceConfig.pmu.read(0x00) & 0x08: return 0
         return DeviceConfig.pmu.get_battery_voltage() * 1000
