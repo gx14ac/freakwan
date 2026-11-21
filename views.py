@@ -50,6 +50,8 @@ class NodesListView:
                 y += 8
                 if y+7 >= self.display.height: break
             item_id += 1
+        if not neigh:
+            self.display.text("No nodes yet",0,y,1)
         self.display.contrast(255)
         self.display.show()
 

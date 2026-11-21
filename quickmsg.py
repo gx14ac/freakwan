@@ -5,6 +5,7 @@
 #   long press (>= 0.8s)     -> enter selection, or go to the next message
 #   short press in selection -> send the selected message
 #   no press for 10s         -> selection canceled
+#   any press during the screen saver only wakes the display
 #
 # Messages are stored one per line in quickmsg.txt and managed with !qm:
 #   !qm                     list
@@ -61,7 +62,21 @@ class QuickMsg:
         label, text = split_entry(self.items[i])
         self.fw.cmdctrl.exec_user_command(text, self.fw.reply_to_serial)
 
+    # If the OLED screen saver is on (only the battery icon is shown),
+    # a press just wakes the display up and is otherwise ignored.
+    # Without this, a short press switched views behind the screen saver
+    # and the device looked frozen.
+    def wake(self):
+        sc = self.fw.scroller
+        if not self.fw.display or sc is None: return False
+        sc.update_screensaver_state()
+        if sc.state != sc.StateSaver: return False
+        sc.last_update = time.time()
+        self.fw.switch_view(sc)
+        return True
+
     def long_press(self):
+        if self.wake(): return
         if not self.items:
             self.show("No quick msgs (!qm add)")
             return
@@ -75,6 +90,7 @@ class QuickMsg:
         self.deadline = time.ticks_add(time.ticks_ms(), TIMEOUT_MS)
 
     def short_press(self):
+        if self.wake(): return
         if self.selecting:
             self.selecting = False
             self.send(self.idx)
